@@ -59,7 +59,7 @@ public abstract class _$className {
         List<${ext.name}Extension> result = new ArrayList<${ext.name}Extension>();
         for (Extension ext : extPoint.getConnectedExtensions()) {
 			try {
-				result.add(new PanelExtension(getManager().getPlugin(
+				result.add(new ${ext.name}Extension(getManager().getPlugin(
 						ext.getDeclaringPluginDescriptor().getId()), ext));
 			} catch (PluginLifecycleException e) {
 				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);

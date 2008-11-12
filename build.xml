@@ -12,7 +12,9 @@
 
    Language: XML
    Compiler: Ant
-   Authors:  Joerg K. Wegner, wegnerj@informatik.uni-tuebingen.de
+   Author:   Christopher Oezbek
+   Based on ant build file originally written by:
+             Joerg K. Wegner, wegnerj@informatik.uni-tuebingen.de
              Morten O. Alver
    Version:  $Revision: 1.82 $
              $Date: 2007/02/16 22:03:15 $
@@ -25,7 +27,7 @@
 <project name="JPFCodeGenerator" default="jars" basedir=".">
 
 	<!-- Properties -->
-	<property name="version" value="0.3" />
+	<property name="version" value="0.4" />
 	<property name="jar" value="JPFCodeGenerator-${version}" />
 	<property name="build" value="build" />
 	<property name="src" value="src" />

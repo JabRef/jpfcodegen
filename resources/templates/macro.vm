@@ -99,7 +99,25 @@
 #end
 #end
 
-
+#macro( writeResource $para)
+#if ($para.multiplicity)
+		public Collection<URL> get${para.name}sAsUrls(){
+			return getResourceParameters("$para.id");
+		}
+		
+		public Collection<URL> get${para.name}sAsUrls(String relativePath){
+			return getResourceParameters("$para.id", relative);
+		}
+#else
+		public URL get${para.name}AsUrl(){
+		    return getResourceParameter("$para.id");
+		}
+		
+		public URL get${para.name}AsUrl(String relativePath){
+		    return getResourceParameter("$para.id", relativePath);
+		}
+#end
+#end
 
 ##-------------------------------------------
 ## writePara
@@ -148,6 +166,8 @@
     #writeFixed($para)
   #elseif (($para.type == "date") || ($para.type == "date-time") || ($para.type == "time"))
     #writeDate($para)
+  #elseif ($para.type == "resource")
+    #writeResource($para)
   #else
     #writeParameter($para)
   #end

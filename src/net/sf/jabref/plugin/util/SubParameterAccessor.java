@@ -24,16 +24,16 @@ import org.java.plugin.Plugin;
 import org.java.plugin.registry.Extension.Parameter;
 
 /**
- * Helper class to wrap an existing extension for use in a plugin.
+ * Helper class to wrap a parameter for use in the generated code.
  * 
  * Generated plug-in code will extend this class and put all calls through to
- * the wrapped extension instance.
+ * the wrapped parameter instance.
  * 
  */
 public class SubParameterAccessor extends ParameterAccessor {
 
 	Plugin declaringPlugin;
-	
+
 	Parameter parameter;
 
 	public SubParameterAccessor(Plugin declaringPlugin, Parameter parameter) {
@@ -41,10 +41,10 @@ public class SubParameterAccessor extends ParameterAccessor {
 		this.parameter = parameter;
 	}
 
-	public Plugin getDeclaringPlugin(){
+	public Plugin getDeclaringPlugin() {
 		return this.declaringPlugin;
 	}
-	
+
 	public Parameter getParameter(String id) {
 		return parameter.getSubParameter(id);
 	}

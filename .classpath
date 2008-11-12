@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test/src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/jpf.jar" sourcepath="D:/Download/jpf-src-1.5.1.zip"/>
-	<classpathentry kind="lib" path="lib/jpf-boot.jar"/>
+	<classpathentry kind="lib" path="lib/jpf-boot.jar" sourcepath="D:/Download/jpf-src-1.5.1/source-boot"/>
 	<classpathentry kind="lib" path="lib/velocity-dep-1.5.jar"/>
 	<classpathentry kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry kind="lib" path="lib/jpf-tools.jar" sourcepath="D:/Download/jpf-src-1.5.1/source-tools"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/3"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

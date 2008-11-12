@@ -98,11 +98,28 @@ public class CodeGenerator {
 				File pluginBaseFolder = new File(desc.getLocation().getFile())
 						.getParentFile();
 
+				String targetDir = "src/";
 				String helperClassName = null;
-				PluginAttribute helperClassAttribute = desc
-						.getAttribute("helperClassName");
-				if (helperClassAttribute != null) {
-					helperClassName = helperClassAttribute.getValue();
+
+				PluginAttribute jpfCodeGenAttribute = desc
+						.getAttribute("jpfcodegen");
+				if (jpfCodeGenAttribute != null) {
+					PluginAttribute helperAttribute = jpfCodeGenAttribute
+							.getSubAttribute("helperClassName");
+					if (helperAttribute != null) {
+						helperClassName = helperAttribute.getValue();
+					}
+					PluginAttribute targetDirAttribute = jpfCodeGenAttribute
+							.getSubAttribute("targetDir");
+					if (targetDirAttribute != null) {
+						targetDir = targetDirAttribute.getValue();
+						if (targetDir.length() == 0) {
+							System.err.println("targetDir attribute in "
+									+ desc.getId()
+									+ " is invalid. Proceeding with 'src/'");
+							targetDir = "src/";
+						}
+					}
 				}
 
 				String className = null;
@@ -122,7 +139,8 @@ public class CodeGenerator {
 					System.out
 							.println("  Code Generator can only generate code for plugins that either have...\n"
 									+ "    ...the class attribute set in the plugin or\n"
-									+ "    ...the plugin-attribute 'helperClassName' set to the classname to generate");
+									+ "    ...the plugin-attribute 'jpfcodegen' -> 'helperClassName' set to the classname to generate\n" +
+									  "    See the documentation for details.");
 					continue; // Next Plugin
 				}
 				int lastDot = className.lastIndexOf('.');
@@ -136,7 +154,8 @@ public class CodeGenerator {
 					path.append(part).append("/");
 				}
 
-				File pluginFolder = new File(pluginBaseFolder, "src/" + path);
+				File pluginFolder = new File(new File(pluginBaseFolder,
+						targetDir), path.toString());
 
 				File pluginClassFile = new File(pluginFolder, pluginClassName
 						+ ".java");
@@ -145,7 +164,9 @@ public class CodeGenerator {
 				p.setProperty("velocimacro.library",
 						"resources/templates/macro.vm");
 				p.setProperty("resource.loader", "class, file");
-				p.setProperty("class.resource.loader.class", "org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
+				p
+						.setProperty("class.resource.loader.class",
+								"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 				Velocity.init(p);
 
 				VelocityContext context = new VelocityContext();
@@ -255,7 +276,7 @@ public class CodeGenerator {
 
 				// add imports
 				imports.add("net.sf.jabref.plugin.util.SubParameterAccessor");
-				
+
 				// populate the sub field with information about these:
 				recurseParameters(para, subDefs, imports);
 			} else {
@@ -288,6 +309,9 @@ public class CodeGenerator {
 				} else {
 					continue;
 				}
+				break;
+			case RESOURCE:
+				imports.add("java.net.URL");
 				break;
 			case DATE:
 			case DATE_TIME:
