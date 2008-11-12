@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JPF Code Generator - 0.3</title>
+<script type="text/javascript" src="resources/website/sh_main.min.js" />
+<script type="text/javascript" src="resources/website/sh_java.js" />
+<script type="text/javascript" src="resources/website/sh_xml.min.js" />
+<link type="text/css" rel="stylesheet"
+	href="resources/website/sh_ide-eclipse.css" />
+<style type="text/css">
+/*<![CDATA[*/
+body {
+	margin: 0;
+	margin-bottom: 20px;
+	padding: 0;
+	background-color: #CCCCCC;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	color: #000000;
+}
+
+h1,h2,h3,p {
+	margin-top: 10pt;
+	margin-bottom: 3pt;
+	padding-left: 15pt;
+	padding-right: 15pt;
+}
+
+h2 {
+	padding-top: 15pt;
+	border-top: solid 1px #999999;
+}
+
+.example {
+	margin: 15pt;
+	padding-left: 10pt;
+	padding-right: 10pt;
+	background-color: #EEEEEE;
+	border: solid 1px #999999;
+	color: #000000;
+}
+
+.example pre {
+	margin: 10pt;
+	padding: 5pt;
+	border: solid 1px #999999;
+	background-color: #FFFFFF;
+}
+
+.example p {
+	padding: 0;
+}
+
+dl,ul,ol {
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+	padding-left: 15pt;
+	padding-right: 15pt;
+}
+
+dt {
+	margin: 10pt 0 0 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+dd {
+	margin: 0;
+	padding: 0;
+}
+
+li,img {
+	margin-left: 15pt;
+}
+
+a {
+	text-decoration: none;
+	color: #990000;
+}
+
+hr {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+/*]]>*/
+</style>
+</head>
+
+<body>
+
+<h1>JPF Code Generator - 0.3</h1>
+
+<h2>Table of Contents</h2>
+<ol>
+	<li><a href="#introduction">Introduction</a></li>
+	<li><a href="#examples">Examples / Tutorials</a></li>
+	<li><a href="#download">Download and Bugtracker</a></li>
+	<li><a href="#dependencies">Dependencies</a></li>
+	<li><a href="#version">Version information</a></li>
+	<li><a href="#release">Release announcements</a></li>
+	<li><a href="#contact">Contact &amp; License</a></li>
+</ol>
+
+<h2>Introduction</h2>
+
+<p>This is a handy little tool that generates classes for accessing
+the attributes and extensions of JPF plug-ins from plugin.xml files.
+This has the advantage of providing a strongly typed access to the
+plug-in and simplyfies working with plug-ins.</p>
+
+<div class="example">
+<p>Run it using...</p>
+<pre>jar -jar jpfCodeGenerator-x.x.jar &lt;comma separated plug-in locations&gt; &lt;overwrite:true|false&gt;</pre>
+<p>...and pass it a comma separated list of plug-in locations
+(folders in which to search for plugin.xml) and a boolean whether
+generated files from previous runs should be overwritten.</p>
+</div>
+
+<div class="example">
+<p>The plugin.xml needs to contain the class attribute:</p>
+<pre class="sh_xml">&lt;plugin id="pluginID" version="0.1.0" class="com.example.MyPlugin"&gt;</pre>
+<p>or have an attribute with id "helperClassName" set:</p>
+<pre class="sh_xml">&lt;attributes&gt;
+   &lt;attribute id="helperClassName" value="com.example.MyPluginHelper"/&gt;
+&lt;/attributes&gt;</pre>
+<p>so that the script knows which class to generate.</p>
+</div>
+
+<div class="example">
+<p>The script will generate two files (in a src-folder in the same
+folder as the plugin.xml):</p>
+<pre class="sh_java">com.example.MyPlugin</pre>
+<p>and</p>
+<pre class="sh_java">com.example.generated._MyPlugin</pre></div>
+<p>_MyPlugin contains all the essential method for accessing the
+attributes and extensions of the plug-in but will be regenerated when
+you re-run the code generator. All customizations should thus be put
+into MyPlugin (which extends _MyPlugin), which by default is not
+recreated. To recreate MyPlugin also, pass true as a second parameter to
+the script.</p>
+<p>If you choose to use the attribute helperClassName version, then
+a separate class is generated that is independent of the plugin-class
+(you don't even need one at all).</p>
+
+<h2 id="examples">Examples / Tutorials</h2>
+<p>The source distribution of the code generator comes with the
+following examples / tutorials:</p>
+<ul>
+	<li><a href="tutorials/basic/index.html">Basic Tutorial for
+	the JPF CodeGenerator</a></li>
+</ul>
+
+<h2 id="downloads">Downloads</h2>
+<p>The latest version of the code generator can be downloaded from
+the <a href="http://forge.spline.inf.fu-berlin.de/projects/jpfcodegen/">JPF
+Code Generator project homepage</a> where you also find <a
+	href="http://forge.spline.inf.fu-berlin.de/tracker/?group_id=75">the
+bug-tracker of the project</a>.</p>
+
+<ul>
+	<li>Version 0.3 - <a
+		href="http://forge.spline.inf.fu-berlin.de/frs/?group_id=75">Download
+	Page</a>
+	<ul>
+		<li>JPFCodeGenerator-0.3.jar - Binary jar for running the code
+		generator.</li>
+		<li>JPFCodeGenerator-0.3-rt.jar - Runtime Jar, needed for running
+		applications that use code generated by the code generator.</li>
+		<li>JPFCodeGenerator-0.3-src.jar - Source Distribution including
+		examples and documentation.</li>
+	</ul>
+	</li>
+</ul>
+
+<h2 id="dependencies">Dependencies</h2>
+
+<p>To run the code generator jar you need (from the lib directory):</p>
+<ul>
+	<li>Velocity-dep-1.5.jar - Apache Velocity Template Engine is used
+	to create the classes.</li>
+	<li>jpf.jar - JPF engine is used to read the plugin.xml</li>
+	<li>jpf-boot.jar - The boot library is used to collect
+	plugin-locations.</li>
+</ul>
+
+<p>To run the code that gets generated you need:</p>
+<ul>
+	<li>jpf.jar - You need this anyway to use JPF ;-)</li>
+	<li>JPFCodeGenerator-x.x-rt.jar - Contains some helper classes
+	needed by the generated classes.</li>
+	<li>commons-logging.jar - This is both needed by JPF and the
+	classes generated by the code generator.</li>
+</ul>
+
+<h2 id="version">Version / Todo</h2>
+
+<p>Todo:</p>
+<ul>
+	<li>Advanced examples.</li>
+	<li>Support extension multiplicity.</li>
+	<li>Support inheritance of extension points.</li>
+	<li>Support extension plugin attributes (normal and nested).</li>
+	<li>Support for documentation nodes</li>
+	<li>Support for all extension parameter types (plugin-ID,
+	extension-point-ID, extension-ID are missing).</li>
+	<li>Improve support for naming choices. At the moment if you
+	define extension-attributes using type "fixed", the values you use must
+	be valid Java identifiers.</li>
+</ul>
+
+<p>0.3 - 2007-07-11</p>
+<ul>
+	<li>Date/time extension parameters are now supported.</li>
+	<li>Basic Tutorial added to documentation.</li>
+	<li>Nested extension parameters are now possible.</li>
+</ul>
+
+<p>0.2 - 2007-07-05</p>
+<ul>
+	<li>Added option to generate HelperClass instead of putting the
+	code into the Plugin class</li>
+	<li>Added ant build.xml to generate rt.jar and run the Code
+	Generator</li>
+	<li>Added support for type "fixed" attributes using enums. See
+	limitations.</li>
+	<li>Multiplicity support for parameter attributes (so far only
+	String (and Class), Number, Fixed, Boolean parameters are supported).</li>
+</ul>
+
+<p>0.1 - 2007-07-03</p>
+<ul>
+	<li>Initial release posted on SF.net</li>
+</ul>
+
+<h2 id="release">Release Announcements</h2>
+
+<div class="example">
+<p>0.3 - 2007-07-11</p>
+<pre>
+Hi Guys,
+  version 0.3 of the code generator is ready. It comes with better documentation 
+(a tutorial at http://www.inf.fu-berlin.de/~oezbek/jpf/tutorials/basic/) and 
+some additional features like nested extension-point-parameters. I also 
+added a small homepage for it at http://www.inf.fu-berlin.de/~oezbek/jpf/
+where you will also find the link for downloading it.
+
+Suggestions and comments are highly welcome: Send them to oezi[at]oezi.de
+
+Cheers,
+  Christopher
+</pre>
+<p>0.2 - 2007-07-05</p>
+<pre> 
+Hi Guys,
+  I have just extended the code generator a little bit to also support 
+extension-point parameter multiplicity, attributes of type fixed and
+a standalone mode:
+
+1.) If you have a parameter with a multiplicity that might result in several
+    parameter values:
+
+&lt;parameter-def type="string" id="name" multiplicity="any"/&gt;
+
+then this will now generate this code:
+
+public Collection&lt;String&gt; getNames(){
+  return getStringParameters("name");
+}
+
+2.) If you have a parameter with a type fixed then this will be mapped to
+    an enum in Java:
+
+&lt;parameter-def type="fixed" id="alignment" custom-data="left|right|top|bottom"/&gt;
+
+will generate:
+
+public enum Alignment {
+    LEFT, RIGHT, TOP, BOTTOM;
+}
+
+public Alignment getAlignment(){
+    return Alignment.valueOf(getStringParameter("alignment").toUpperCase());
+}
+
+3.) If you don't want to use the plugin class-attribute as a target
+    class to generate, you can now also use plugin-attributes to define 
+    the name of the class to generate:
+
+&lt;attributes&gt;
+   &lt;attribute id="helperClassName" value="com.example.MyPluginHelper"/&gt;
+&lt;/attributes&gt;
+
+4.) The Code Generator also now comes in 3 handy jars:
+
+http://page.mi.fu-berlin.de/oezbek/jpf/JPFCodeGenerator-0.2.jar 
+  -&gt; The code generator as a binary package to run using
+  
+java -jar JPFCodeGenerator-0.2.jar &lt;comma separated plug-in locations&gt; &lt;overwrite:true|false&gt;
+
+http://page.mi.fu-berlin.de/oezbek/jpf/JPFCodeGenerator-0.2-rt.jar
+
+The runtime dependencies needed to use the generated classes, add 
+this to your buildpath in the project.
+
+http://page.mi.fu-berlin.de/oezbek/jpf/JPFCodeGenerator-0.2-src.jar
+
+The source code if anybody is interested to play with it.
+
+Cheers,
+  Christopher
+</pre></div>
+
+<h2 id="contact">Contact &amp; License</h2>
+
+<p>Copyright (C) Christopher Oezbek (2007) - <a
+	href="mailto:oezi[at]oezi.de">oezi[at]oezi.de</a></p>
+
+<p>This tool was created as part of the ongoing migration in the <a
+	href="http://jabref.sf.net">JabRef reference manager</a> to move to a
+modular plug-in architecture and is released under the <a
+	href="http://www.gnu.org">LGPL 3.0</a>.</p>
+
+<p>Your <a href="mailto:oezi[at]oezi.de">improvements and
+suggestions are welcome</a>.</p>
+
+</body>
+</html>
+
+

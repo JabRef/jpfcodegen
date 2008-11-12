@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<!--++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+   Ant build file for JPFCodeGenerator-Basic tutorial
+
+   http://www.inf.fu-berlin.de/~oezbek/jpf/
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+<project name="JPFCodeGenerator-BasicTutorial" default="compile" basedir=".">
+
+	<!-- Properties -->
+	<property name="jpfCodeGeneratorVersion" value="0.3" />
+	<property name="build" value="build" />
+	<property name="src" value="src" />
+	<property name="lib" value="../../lib" />
+
+	<!-- Code Generator classpath -->
+	<path id="classpath-codeGenerator">
+		<pathelement path="${build}" />
+		<pathelement location="${lib}/jpf.jar" />
+		<pathelement location="${lib}/../JPFCodeGenerator-${jpfCodeGeneratorVersion}.jar" />
+		<pathelement location="${lib}/jpf-boot.jar" />
+		<pathelement location="${lib}/velocity-dep-1.5.jar" />
+		<pathelement location="${lib}/commons-logging.jar" />
+	</path>
+
+	<!-- Application classpath -->
+	<path id="classpath-application">
+		<pathelement path="${build}" />
+		<pathelement location="${lib}/jpf.jar" />
+		<pathelement location="${lib}/jpf-boot.jar" />
+		<pathelement location="${lib}/../JPFCodeGenerator-${jpfCodeGeneratorVersion}-rt.jar" />
+		<pathelement path="plugins/core/build/" />
+		<pathelement location="${lib}/commons-logging.jar" />
+	</path>
+
+	<!-- Run the JPF Code Generator -->
+	<target name="generate">
+		<java classname="net.sf.jabref.plugin.util.CodeGenerator" fork="true">
+			<classpath refid="classpath-codeGenerator" />
+		</java>
+	</target>
+
+	<target name="compile" depends="compilePlugins">
+		<mkdir dir="${build}" />
+		<javac debug="on" deprecation="on" destdir="${build}" source="1.5" target="1.5">
+			<src path="${src}" />
+			<classpath refid="classpath-application" />
+		</javac>
+	</target>
+
+	<target name="compilePlugins" depends="generate">
+		<ant inheritall="false" dir="plugins/core/" />
+		<ant inheritall="false" dir="plugins/plugin1/" />
+		<ant inheritall="false" dir="plugins/plugin2/" />
+	</target>
+
+	<target name="run">
+		<java classname="com.example.Main" fork="true">
+			<classpath refid="classpath-application" />
+		</java>
+	</target>
+
+	<target name="clean" description="Clean project">
+		<delete dir="${build}" />
+		<ant inheritall="false" dir="plugins/core/" target="clean" />
+		<ant inheritall="false" dir="plugins/plugin1/" target="clean" />
+		<ant inheritall="false" dir="plugins/plugin2/" target="clean" />
+	</target>
+
+</project>

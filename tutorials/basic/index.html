@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>JPF Code Generator - Basic Tutorial</title>
+<script type="text/javascript"
+	src="../../resources/website/sh_main.min.js" />
+<script type="text/javascript" src="../../resources/website/sh_java.js" />
+<script type="text/javascript"
+	src="../../resources/website/sh_xml.min.js" />
+<link type="text/css" rel="stylesheet"
+	href="../../resources/website/sh_ide-eclipse.css" />
+<style type="text/css">
+/*<![CDATA[*/
+body {
+	margin: 0;
+	margin-bottom: 20px;
+	padding: 0;
+	background-color: #CCCCCC;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	color: #000000;
+}
+
+h1,h2,h3,p {
+	margin-top: 10pt;
+	margin-bottom: 3pt;
+	padding-left: 15pt;
+	padding-right: 15pt;
+}
+
+h2 {
+	padding-top: 15pt;
+	border-top: solid 1px #999999;
+}
+
+.example {
+	margin: 15pt;
+	padding-left: 10pt;
+	padding-right: 10pt;
+	background-color: #EEEEEE;
+	border: solid 1px #999999;
+	color: #000000;
+}
+
+.example pre {
+	margin: 10pt;
+	padding: 5pt;
+	border: solid 1px #999999;
+	background-color: #FFFFFF;
+}
+
+.example p {
+	padding: 0;
+}
+
+dl,ul,ol {
+	margin-top: 3pt;
+	margin-bottom: 3pt;
+	padding-left: 15pt;
+	padding-right: 15pt;
+}
+
+dt {
+	margin: 10pt 0 0 0;
+	padding: 0;
+	font-weight: bold;
+}
+
+dd {
+	margin: 0;
+	padding: 0;
+}
+
+li,img {
+	margin-left: 15pt;
+}
+
+a {
+	text-decoration: none;
+	color: #990000;
+}
+
+hr {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+/*]]>*/
+</style>
+</head>
+
+<body onload="sh_highlightDocument();">
+
+<h1><a href="http://www.inf.fu-berlin.de/~oezbek/jpf/">JPF Code
+Generator</a> - Basic Tutorial</h1>
+
+<h2>Table of Contents</h2>
+<ol>
+	<li><a href="#intro">Introduction</a></li>
+	<li><a href="#corexml">Creating the Core Plugin's plugin.xml</a></li>
+	<li><a href="#createPlugin">Creating the extending Plugins</a></li>
+	<li><a href="#generateCode">Running the code generator</a></li>
+	<li><a href="#createTheApplication">Creating the Application</a></li>
+	<li><a href="#conclusion">Conclusion</a></li>
+	<li><a href="#contact">Contact</a></li>
+</ol>
+
+<h2 id="intro">Introduction</h2>
+
+<p>This tutorial describes an absolute minimal use-case for JPF and
+the JPF Code Generator tool. The example system is a stripped-down
+version of the <a href="http://jpf.sourceforge.net/tutorial.html">JPF
+Tutorial</a> example. The system consists of three plugins: One core plug-in
+that displays a tabbed pane and offers an extension-point so that
+plug-ins can contribute panels on this pane and two plug-ins that
+provide such panels.</p>
+
+<div class="example">
+<p>The system uses the default file structure for a JPF based
+application:</p>
+<pre>
+  .
+  |-&gt; src              Main application source code
+  \-&gt; plugins          Folder for plug-ins
+      |-&gt; core         The main plug-in that provides extension-points for others to extend.
+      |-&gt; plugin1      An example plug-in that provides one extension
+      \-&gt; plugin2      Another example plug-in that provides one extension</pre>
+</div>
+
+<h2 id="corexml">Creating the Core Plugin's plugin.xml</h2>
+
+<p>The most important plugin.xml is the one of the core plug-in,
+since it offers the extension point for the other plug-ins to extend.
+Since this is a basic tutorial we will only a very basic extension point
+that requires only two parameters to be defined by an extension. First
+an extending plug-in should tell us the name of the panel it wants to
+contribute and then it should provide us with a type that extends <code>java.swing.JPanel</code>,
+so that we can create an instance of this type to add to the tabbed pane
+of the main application we want to create.</p>
+
+<div class="example">
+<p>The resulting plugin.xml for the com.example.core plug-in looks
+like this:</p>
+<pre class="sh_xml">
+&lt;?xml version="1.0" ?&gt;
+&lt;!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd"&gt;
+&lt;plugin id="com.example.core" version="1.0.0"
+	class="com.example.core.CorePlugin"&gt;
+
+	&lt;!-- Since the application code uses the core plug-in 
+		we do not provide a runtime reference to the class files. --&gt;
+
+	&lt;!-- In this example, the application provides a single extension point for plug-ins to extend: --&gt;
+	&lt;extension-point id="Panel"&gt;
+		&lt;!-- String parameter with custom-data are used to tell the code-generator 
+			that this extension-point parameter is really used for getting objects from plug-ins that
+			implement this extension-point.
+			
+			The given class name in custom-data will be used as the return-type of the function "getPanel()"
+			that is generated for this parameter.	         
+		--&gt;
+		&lt;parameter-def type="string" id="panel"
+			custom-data="javax.swing.JPanel" /&gt;
+		&lt;parameter-def type="string" id="name" /&gt;
+	&lt;/extension-point&gt;
+
+&lt;/plugin&gt;</pre>
+<p>The runtime attribute is needed, so that JPF can manage the
+classpath of our application for us. For more details on this have a
+look at the <a href="http://jpf.sourceforge.net/tutorial.html">JPF
+tutorial.</a></p>
+</div>
+
+<h2 id="createPlugin">Creating the extending Plugins</h2>
+
+<p>Once we have defined this extension-point, we can now create
+plug-ins that extend it. In our case we need to do two things for
+this...</p>
+
+<div class="example">
+<p>...we need to create the actual panel class that we want to
+contribute to the system (for simplicity this is really a very minimal
+implementation)...</p>
+<pre class="sh_java">
+package com.example.plugin1;
+
+import java.awt.Label;
+
+import javax.swing.JPanel;
+
+public class Plugin1Panel extends JPanel {
+
+    private static final long serialVersionUID = -6420919219685347035L;
+
+    public Plugin1Panel(){
+        this.add(new Label("I am Panel 1!"));
+    }
+}</pre>
+<p>...and then we need to create the plugin.xml that will contain an
+extension:</p>
+<pre class="sh_xml">
+&lt;?xml version="1.0" ?&gt;
+&lt;!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd"&gt;
+&lt;plugin id="com.example.plugin1" version="1.0.0" class="com.example.plugin1.Plugin1"&gt;
+
+    &lt;requires&gt;
+        &lt;import plugin-id="com.example.core"/&gt;
+    &lt;/requires&gt;
+    
+    &lt;runtime&gt;
+        &lt;library type="code" path="build/" id="src"/&gt;
+    &lt;/runtime&gt;
+
+    &lt;extension id="Plugin1Panel" plugin-id="com.example.core" point-id="Panel"&gt;
+        &lt;parameter id="panel" value="com.example.plugin1.Plugin1Panel" /&gt;
+        &lt;parameter id="name" value="Plugin No. 1 Panel" /&gt;
+    &lt;/extension&gt;
+
+&lt;/plugin&gt;</pre>
+<p>The plugin.xml for the second plugin is similar.</p>
+</div>
+
+<h2 id="generateCode">Running the code generator</h2>
+
+<p>Using these plugin.xml files, we can now use the JPF Code
+Generator to create code that will make using the plug-in system very
+easy.</p>
+
+<div class="example">
+<p>Go to directory...</p>
+<pre>tutorials/basic/</pre>
+<p>...and run the <code>generate</code> <code>ant</code>-task there:</p>
+<pre>
+ant generate
+</pre></div>
+
+<p>This will create two classes for each plug-in using the
+class-attribute in the plugin.xml. We will discuss this only for the
+interesting case of the CorePlugin (the generated classes Plugin1 and
+Plugin2 classes are empty at the moment since they don't provide
+extension points)</p>
+
+<div class="example">
+<p>The class that contains the important code parts is <code>com.example.core.generated._CorePlugin.java</code>.
+As you can see below it contains a method for retrieving all extensions
+for the extension-point. The extensions then contains methods for
+accessing the attributes <code>panel</code> and <code>name</code>. Since
+we defined <code>panel</code> to be a string-parameter with a type as
+custom-data, the code generator has created a method that returns a
+singleton instance of the type given in the extending plug-in (in the
+case of <code>com.example.Plugin1</code> this will be an instance of <code>com.example.plugin1.Plugin1Panel</code>).
+The name method will return just the string value defined in the
+plugin.xml of the extending plug-in (for the extension in Plugin1 this
+will be "Plugin No. 1 Panel").</p>
+<pre class="sh_java">
+package com.example.core.generated;
+
+...imports...
+
+/**
+ * Do not modify this file, as it was auto generated and will be overwritten!
+ * User modifications should go in com.example.core.CorePlugin.
+ */
+public abstract class _CorePlugin extends Plugin {
+
+	public static String getId() {
+		return "com.example.core";
+	}
+
+	static Log log = LogFactory.getLog(_CorePlugin.class);
+
+	public List&lt;PanelExtension&gt; getPanelExtensions() {
+		ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(
+				getId(), "Panel");
+		List&lt;PanelExtension&gt; result = new ArrayList&lt;PanelExtension&gt;();
+		for (Extension ext : extPoint.getConnectedExtensions()) {
+			try {
+				result.add(new PanelExtension(getManager().getPlugin(
+						ext.getDeclaringPluginDescriptor().getId()), ext));
+			} catch (PluginLifecycleException e) {
+				log.error("Failed to activate plug-in"
+						+ ext.getDeclaringPluginDescriptor().getId(), e);
+			}
+		}
+		return result;
+	}
+
+	public static class PanelExtension extends RuntimeExtension {
+		public PanelExtension(Plugin declaringPlugin, Extension wrapped) {
+			super(declaringPlugin, wrapped);
+		}
+
+		/**
+		 * @return A singleton instance of the class parameter or null if the class could not be found!
+		 */
+		public javax.swing.JPanel getPanel() {
+			return (javax.swing.JPanel) getClassParameter("panel");
+		}
+
+		public String getName() {
+			return getStringParameter("name");
+		}
+	}
+}</pre>
+<p>Since this class will be complete overwritten if you re-run the
+code generator you should not put any custom code into this class.
+Rather the code generator has created another class that you can
+customize, which will not get re-generated if it already exists. This
+class is the <code>com.example.core.CorePlugin.java</code> and looks as
+follows:</p>
+
+<pre class="sh_java">
+package com.example.core;
+
+import com.example.core.generated._CorePlugin;
+
+import org.java.plugin.PluginLifecycleException;
+import org.java.plugin.PluginManager;
+
+public class CorePlugin extends _CorePlugin {
+
+    public void doStart(){
+        // TODO: Will be called when plug-in is started.
+    }
+
+    public void doStop(){
+        // TODO: Will be called when plug-in is stopped.
+    }
+
+    /**
+     * Retrieve the Plug-in instance from the given manager.
+     * 
+     * @param manager
+     *            The manager from which to retrieve the plug-in instance
+     * 
+     * @return The requested plug-in or null if not found.
+     */
+    public static CorePlugin getInstance(PluginManager manager) {
+        try {
+            return (CorePlugin) manager
+                    .getPlugin(CorePlugin.getId());
+        } catch (PluginLifecycleException e) {
+            return null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+}</pre></div>
+
+<h2 id="createTheApplication">Creating the Application</h2>
+
+<p>In the main application source folder we can now create the
+application itself <code>com.example.Main</code>. The application will
+initialize plug-in system, create the main window with a tabbed pane on
+it and use the plug-in system to fill this tabbed pane.</p>
+
+<div class="example">
+<p>First we need to initialize the plug-in system:</p>
+<pre class="sh_java">
+// Create Plugin Manager
+manager = ObjectFactory.newInstance().createManager();
+
+// Find plugins and add to registry
+DefaultPluginsCollector collector = new DefaultPluginsCollector();
+ExtendedProperties ep = new ExtendedProperties();
+ep.setProperty("org.java.plugin.boot.pluginsRepositories",
+        "./plugins");
+try {
+    collector.configure(ep);
+    manager.publishPlugins(collector.collectPluginLocations().toArray(
+            new PluginLocation[] {}));
+} catch (Exception e) {
+    e.printStackTrace();
+    System.exit(0);
+}</pre>
+<p>Then we will create a JFrame to show the tabbed pane:</p>
+<pre class="sh_java">
+JFrame frame = new JFrame("JPF Code Generator Basic Tutorial");
+frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+frame.setSize(400, 300);
+frame.setLocation(300, 200);
+
+JTabbedPane tabbedPane = new JTabbedPane();
+frame.add(tabbedPane);</pre>
+<p>Now we want to populate the tabbed pane with the Panels that the
+plug-ins have contributed</p>
+<pre class="sh_java">
+// Use the plugin system to find panels to add to the tabbed pane
+CorePlugin corePlugin = CorePlugin.getInstance(manager);
+
+// corePlugin might be null here (for instance if the plug-in is missing)
+if (corePlugin != null){
+    
+    // Now we can get all extensions for the Panel extension point
+    for (PanelExtension extension : corePlugin.getPanelExtensions()){
+        
+        // The PanelExtension class then allows easy access to the parameters defined 
+        // for this extension-point. 
+        JPanel panel = extension.getPanel();
+        String name = extension.getName();
+
+        // panel might be null if an error occurred while creating the object
+        if (panel == null){
+            System.out.println("Error loading panel from extension " + extension.getId());
+            continue;
+        }
+        
+        tabbedPane.addTab(name, panel);
+    }
+}</pre>
+
+<p>(This paragraph contains some advanced topics, you can safely
+skip it:) You notice that this style of using a plug-in framework is a
+little different as the one you get when using the JPF-boot library. In
+contrast to JPF-boot, where everything is a plug-in and the application
+is started by starting a dedicated application plug-in, this tutorial
+here uses the plug-in system from a stand-alone application. I feel that
+this is a more natural approach, when first getting into contact with
+plug-in architectures. If you want to achieve a pure plug-in style of
+programming put both the creation of the JFrame and the hooking up of
+the panels into the doStart method of the <code>com.example.core.CorePlugin</code>.
+Another point that is important in this discussion is how to set the
+classpath. If the core plug-in is used by the main application directly,
+it also needs to be available on the classpath during building and
+running the application. This means that the core plugin does not
+provide a runtime plug-in attribute but instead needs to be on the
+classpath of the application itself.</p>
+
+<p>Finally we set this frame to visible:</p>
+<pre class="sh_java">frame.setVisible(true);</pre>
+<p>If you put all this code in a class body into the method <code>start()</code>
+your sample application is done.</p>
+<pre class="sh_java">
+package com.example;
+
+import javax.swing.*;
+import org.java.plugin.*;
+import org.java.plugin.util.ExtendedProperties;
+import com.example.core.CorePlugin;
+import com.example.core.generated._CorePlugin.PanelExtension;
+
+public class Main {
+
+    public static void main(final String[] args) {
+        // Move to non-static and swing-thread.
+        SwingUtilities.invokeLater(new Runnable(){
+            public void run() {
+                new Main().start(args);
+            }
+        });
+    }
+
+    PluginManager manager;
+
+    public void start(String[] args) {
+        
+        !!Code from above goes here!!
+        
+    }
+}</pre>
+<p>To run the example application go to the folder...</p>
+<pre>tutorials/basic/</pre>
+<p>...and run the <code>ant</code>-task <code>run</code>:</p>
+<pre>ant run</pre></div>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>In this tutorial you have learned about the basics of using the
+Java Plug-in Framework in conjunction with the code generator to easily
+enable a plug-in system for your java application.</p>
+
+<p>Key points to remember are:</p>
+<ul>
+	<li>Create plug-ins that define extension-points, and those than
+	provide extensions for them.</li>
+	<li>Use the JPF Code Generator to generate code for easy access on
+	these extensions and attributes.</li>
+	<li>Start-up the plug-in system using the boiler-plate code
+	described above.</li>
+	<li>As an advanced note: Both styles of using the plug-in
+	framework (from an application and purely plug-in based) are supported
+	by JPF and the code generator.</li>
+</ul>
+
+<p>More information on how to use the code generator is provided <a
+	href="../../index.html">in its documentation</a> (for instance if you
+don't want to use the class attribute to define which class gets
+generated) and further information about JPF in general is best found on
+the <a href="http://jpf.sf.net/">JPF Homepage on Sourceforge</a>.</p>
+
+<h2 id="contact">Contact</h2>
+
+<p>Copyright (C) Christopher Oezbek (2007) - <a
+	href="mailto:oezi[at]oezi.de">oezi[at]oezi.de</a></p>
+
+<p>Your <a href="mailto:oezi[at]oezi.de">improvements and
+suggestions are welcome</a>.</p>
+
+</body>
+</html>
+
+

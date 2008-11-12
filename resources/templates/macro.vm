@@ -1,0 +1,161 @@
+
+#macro( writeClass $para)
+#if ($para.multiplicity)
+        /**
+         * @return A singleton instance of the class parameter or null if the class could not be found!
+         */
+        @SuppressWarnings("unchecked")
+        public Collection<$para.className> get${para.name}s(){
+            return (Collection<$para.className>)(Collection)getClassParameters("$para.id");
+        }
+#else
+        /**
+         * @return A singleton instance of the class parameter or null if the class could not be found!
+         */
+        public $para.className get${para.name}(){
+          return ($para.className)getClassParameter("$para.id");
+        }
+#end
+#end
+
+#macro(writeString $para)
+#if ($para.multiplicity)
+        public Collection<String> get${para.name}s(){
+            return getStringParameters("$para.id");
+        }
+#else
+        public String get${para.name}(){
+            return getStringParameter("$para.id");
+        }
+#end
+#end
+
+#macro( writeBoolean $para)
+#if ($para.multiplicity)
+        public Collection<Boolean> get${para.name}s(){
+            return getBooleanParameters("$para.id");
+        }
+#else
+        public boolean get${para.name}(){
+            return getBooleanParameter("$para.id");
+        }
+#end
+#end
+
+#macro( writeNumber $para)
+#if ($para.multiplicity)
+        public Collection<Number> get${para.name}s(){
+            return getNumberParameters("$para.id");
+        }
+#else
+        public Number get${para.name}(){
+            return getNumberParameter("$para.id");
+        }
+#end
+#end
+
+#macro( writeFixed $para)
+		public enum ${para.name} {
+		    ${para.enumValues};
+		}
+
+#if ($para.multiplicity)
+        public Collection<${para.name}> get${para.name}s(){
+            Collection<String> values = getStringParameters("$para.id");
+            Collection<${para.name}> result = new ArrayList<${para.name}>(values.size());
+            for (String s : values){
+                result.add(${para.name}.valueOf(s.toUpperCase()));
+            }
+            return result;
+        }
+#else
+        public ${para.name} get${para.name}(){
+            return ${para.name}.valueOf(getStringParameter("$para.id").toUpperCase());
+        }
+#end
+#end
+
+#macro( writeDate $para)
+#if ($para.multiplicity)
+        public Collection<Date> get${para.name}s(){
+            return getDateParameters("$para.id");
+        }
+#else
+        public Date get${para.name}(){
+            return getDateParameter("$para.id");
+        }
+#end
+#end
+
+#macro( writeParameter $para)
+#if ($para.multiplicity)
+        public Collection<Parameter> get${para.name}(){
+            return getParameters("$para.id");
+        }
+#else
+        public Parameter get${para.name}(){
+            return getParameter("$para.id");
+        }
+#end
+#end
+
+
+
+##-------------------------------------------
+## writePara
+##-------------------------------------------
+#macro( writePara $para)
+  #if ($para.subclass)
+    #if ($para.multiplicity)
+      /**
+       * Returns all composite extension parameters $para.subclassname.
+       * 
+       * The returned collection can be empty.
+       *
+       * @return A collection containing all $para.subclassname 
+       *         that have been defined for the current extension. 
+       */
+      public Collection<$para.subclassname> get${para.subclassname}s(){
+          Collection<Parameter> subparas = getParameters("$para.id");
+          Collection<$para.subclassname> list = new ArrayList<$para.subclassname>(subparas.size());
+          for (Parameter para : subparas){
+              list.add(new ${para.subclassname}(getDeclaringPlugin(), para));
+          }
+          return list;
+      }
+    #else
+      public $para.subclassname get${para.subclassname}(){
+          return new ${para.subclassname}(getDeclaringPlugin(), getParameter("$para.id"));
+      }
+    #end
+    
+    public static class $para.subclassname extends SubParameterAccessor {
+      
+        public $para.subclassname (Plugin declaringPlugin, Parameter parameter){
+            super(declaringPlugin, parameter);
+        }
+  #end
+   
+  #if ($para.type == "class")
+    #writeClass($para)
+  #elseif ($para.type == "string")
+    #writeString($para)
+  #elseif ($para.type == "boolean")
+    #writeBoolean($para)
+  #elseif ($para.type == "number") 
+    #writeNumber($para)
+  #elseif ($para.type == "fixed") 
+    #writeFixed($para)
+  #elseif (($para.type == "date") || ($para.type == "date-time") || ($para.type == "time"))
+    #writeDate($para)
+  #else
+    #writeParameter($para)
+  #end
+
+  #if ($para.subclass)
+    #foreach ($subpara in $para.paras)
+      #writePara($subpara)
+    #end
+    }
+  #end 
+#end

@@ -1,0 +1,82 @@
+package $packageName;
+
+import ${packageName}.generated._$className;
+
+import org.java.plugin.PluginLifecycleException;
+import org.java.plugin.PluginManager;
+
+#if ($doPlugin)
+/**
+ * Plug-in class for plug-in $id.
+ * 
+ * Feel free to modify this file, since only the class _$className 
+ * (in the subpackage ${packageName}.generated)
+ * will be overwritten, when you re-run the code generator.
+ */
+public class $className extends _$className {
+
+    public void doStart(){
+        // TODO: Will be called when plug-in is started.
+    }
+
+    public void doStop(){
+        // TODO: Will be called when plug-in is stopped.
+    }
+
+    /**
+	 * Retrieve the Plug-in instance from the given manager.
+	 * 
+	 * @param manager
+	 *            The manager from which to retrieve the plug-in instance
+	 * 
+	 * @return The requested plug-in or null if not found.
+	 */
+	public static $className getInstance(PluginManager manager) {
+		try {
+			return ($className) manager
+					.getPlugin(${className}.getId());
+		} catch (PluginLifecycleException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
+		    return null;
+		}
+	}
+}
+#else
+/**
+ * Helper class for plug-in $id.
+ * 
+ * Feel free to modify this file, since only the class _$className 
+ * (in the subpackage ${packageName}.generated)
+ * will be overwritten, when you re-run the code generator.
+ */
+public class $className extends _$className {
+
+    /**
+     * Private constructor for singleton pattern.
+     * 
+     * Use getInstance instead.
+     */
+    $className(PluginManager manager){
+        super(manager);
+    }
+    
+    static $className singleton;
+
+    /**
+	 * Retrieve the helper class instance for the given plug-in $id
+	 * 
+	 * @param manager
+	 *            The manager which manages the plug-in.
+	 * 
+	 * @return The requested helper or null if not found.
+	 */
+	public static $className getInstance(PluginManager manager) {
+		if (singleton == null){
+		    singleton = new $className(manager);
+		}
+		return singleton;
+	}
+}
+#end
+

@@ -1,0 +1,82 @@
+package ${packageName}.generated;
+
+#foreach ($import in $imports)
+import $import;
+#end
+
+#if ($extensions.size() > 0)
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+#end 
+/**
+ * Do not modify this file, as it was auto generated and will be overwritten!
+ * User modifications should go in ${packageName}.${className}.
+ */
+#if ($doPlugin)
+public abstract class _$className extends Plugin {
+#else 
+public abstract class _$className {
+
+    PluginManager manager;
+
+    public _$className(PluginManager manager){
+        this.manager = manager;
+    }   
+    
+    public PluginManager getManager(){
+        return this.manager;
+    }
+    
+    /**
+	 * Retrieve the Plug-in instance which this helper class is used for.
+	 * 
+	 * @return The requested plug-in or null if not found.
+	 */
+    public Plugin getPlugin(){
+        try {
+			return getManager()
+					.getPlugin(_${className}.getId());
+		} catch (PluginLifecycleException e) {
+			return null;
+		} catch (IllegalArgumentException e) {
+		    return null;
+		}
+    }
+#end
+
+    public static String getId(){
+        return "$id";
+    }
+
+#if ($extensions.size() > 0)
+	static Log log = LogFactory.getLog(_${className}.class);
+
+#end  
+#foreach ($ext in $extensions)
+	public List<${ext.name}Extension> get${ext.name}Extensions(){
+        ExtensionPoint extPoint = getManager().getRegistry().getExtensionPoint(getId(), "${ext.id}");
+        List<${ext.name}Extension> result = new ArrayList<${ext.name}Extension>();
+        for (Extension ext : extPoint.getConnectedExtensions()) {
+			try {
+				result.add(new PanelExtension(getManager().getPlugin(
+						ext.getDeclaringPluginDescriptor().getId()), ext));
+			} catch (PluginLifecycleException e) {
+				log.error("Failed to activate plug-in " + ext.getDeclaringPluginDescriptor().getId(), e);
+			}
+		}
+        return result;
+    }
+
+    public static class ${ext.name}Extension extends RuntimeExtension {
+        public ${ext.name}Extension(Plugin declaringPlugin, Extension wrapped){
+            super(declaringPlugin, wrapped);
+        }
+                
+#foreach ($para in $ext.paras)
+	#writePara($para)
+#end
+    }
+
+#end
+}
