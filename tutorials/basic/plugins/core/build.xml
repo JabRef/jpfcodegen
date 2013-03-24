@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="JPFCodeGenerator-BasicTutorial-Core" default="compile" basedir=".">
+
+	<!-- Properties -->
+	<property name="jpfCodeGeneratorVersion" value="0.3" />
+	<property name="build" value="build" />
+	<property name="src" value="src" />
+	<property name="lib" value="../../../../lib" />
+
+	<!-- Build classpath -->
+	<path id="classpath">
+		<pathelement path="${build}" />
+		<pathelement path="../../${build}" />
+		<pathelement location="${lib}/../JPFCodeGenerator-${jpfCodeGeneratorVersion}-rt.jar" />
+		<pathelement location="${lib}/jpf.jar" />
+		<pathelement location="${lib}/commons-logging.jar" />
+	</path>
+
+	<target name="compile">
+		<mkdir dir="${build}" />
+		<javac debug="on" deprecation="on" destdir="${build}" source="1.5" target="1.5">
+			<src path="${src}" />
+			<classpath refid="classpath" />
+		</javac>
+	</target>
+
+	<target name="clean" description="Clean project">
+		<delete dir="${build}" />
+		<!-- The next line is only there to create an clean distribution, 
+		     normally you would only clean the generated content. -->
+		<delete dir="${src}" includes="**" includeemptydirs="true" />
+		<!-- The next line is only needed since we delete the src folder, 
+		     with the line above too -->
+		<mkdir dir="${src}" />
+		<delete dir="${src}" includes="**/generated/" includeemptydirs="true" />
+	</target>
+
+</project>

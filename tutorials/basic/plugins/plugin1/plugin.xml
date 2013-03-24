@@ -1,0 +1,18 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.example.plugin1" version="1.0.0" class="com.example.plugin1.Plugin1">
+
+    <requires>
+    	<import plugin-id="com.example.core"/>
+    </requires>
+    
+    <runtime>
+    	<library type="code" path="build/" id="src"/>
+    </runtime>
+
+    <extension id="Plugin1Panel" plugin-id="com.example.core" point-id="Panel">
+		<parameter id="panel" value="com.example.plugin1.Plugin1Panel" />
+		<parameter id="name" value="Plugin No. 1 Panel" />
+	</extension>
+
+</plugin>

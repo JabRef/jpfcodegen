@@ -1,0 +1,23 @@
+<?xml version="1.0" ?>
+<!DOCTYPE plugin PUBLIC "-//JPF//Java Plug-in Manifest 1.0" "http://jpf.sourceforge.net/plugin_1_0.dtd">
+<plugin id="com.example.core" version="1.0.0"
+	class="com.example.core.CorePlugin">
+
+	<!-- Since the application code uses the core plug-in 
+		we do not provide a runtime reference to the class files. -->
+
+	<!-- In this example, the application provides a single extension point for plug-ins to extend: -->
+	<extension-point id="Panel">
+		<!-- String parameter with custom-data are used to tell the code-generator 
+			that this extension-point parameter is really used for getting objects from plug-ins that
+			implement this extension-point.
+			
+			The given class name in custom-data will be used as the return-type of the function "getPanel()"
+			that is generated for this parameter.	         
+		-->
+		<parameter-def type="string" id="panel"
+			custom-data="javax.swing.JPanel" />
+		<parameter-def type="string" id="name" />
+	</extension-point>
+
+</plugin>
