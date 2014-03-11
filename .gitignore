@@ -1,0 +1,5 @@
+*.jar
+bin/
+build/
+.gradle/
+.settings/
